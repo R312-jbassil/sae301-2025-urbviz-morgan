@@ -1,0 +1,769 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  --tavue-blue: #1e3a8a;
+  --tavue-white: #fafafa;
+  --tavue-red: #dc2626;
+  --tavue-navy: #0f172a;
+  --border: rgba(15, 23, 42, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --max-width: 1920px;
+}
+
+@layer base {
+  html {
+    font-family: "Inter", system-ui, sans-serif;
+    scroll-behavior: smooth;
+    color: var(--tavue-navy);
+    background-color: var(--tavue-white);
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    background-color: inherit;
+  }
+
+  main {
+    flex: 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Playfair Display", serif;
+    letter-spacing: -0.01em;
+    color: var(--tavue-navy);
+  }
+
+  a:not(.btn) {
+    color: var(--tavue-blue);
+    text-underline-offset: 4px;
+    transition: color 0.2s ease;
+  }
+
+  a:not(.btn):hover {
+    color: rgba(30, 58, 138, 0.8);
+  }
+}
+
+@layer components {
+  .glass-panel {
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(30, 58, 138, 0.1);
+  }
+}
+
+/* Header & navigation */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-item {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  color: var(--tavue-navy);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.nav-item:hover {
+  background-color: rgba(30, 58, 138, 0.05);
+}
+
+.nav-item.active {
+  background-color: rgba(30, 58, 138, 0.1);
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background-color: var(--tavue-blue);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: rgba(30, 58, 138, 0.9);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid rgba(30, 58, 138, 0.2);
+  color: var(--tavue-blue);
+}
+
+.btn-outline:hover {
+  background-color: rgba(30, 58, 138, 0.05);
+}
+
+/* Cards & badges */
+.card {
+  background-color: #fff;
+  border: 1px solid rgba(30, 58, 138, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  border-color: rgba(30, 58, 138, 0.3);
+  box-shadow: var(--shadow-xl);
+}
+
+.badge {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-primary {
+  background-color: var(--tavue-blue);
+  color: #fff;
+}
+
+.badge-red {
+  background-color: var(--tavue-red);
+  color: #fff;
+}
+
+/* Hero section */
+.hero-section {
+  position: relative;
+  background: linear-gradient(to bottom right, #f8fafc, #ffffff, #f8fafc);
+  overflow: hidden;
+  padding: 96px 0;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.hero-title {
+  font-size: 3rem;
+  line-height: 1.2;
+  color: var(--tavue-navy);
+}
+
+.hero-title-accent {
+  color: var(--tavue-blue);
+}
+
+.hero-image {
+  width: 100%;
+  height: 600px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: var(--shadow-2xl);
+  display: block;
+}
+
+.hero-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Steps */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.step-card {
+  padding: 32px;
+  background-color: #fff;
+  border: 1px solid rgba(30, 58, 138, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.step-card:hover {
+  border-color: rgba(30, 58, 138, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.step-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom right, #1e3a8a, rgba(30, 58, 138, 0.8));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Models / products grids */
+.models-grid,
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.model-card,
+.product-card {
+  background-color: #fff;
+  border: 1px solid rgba(30, 58, 138, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.model-card:hover,
+.product-card:hover {
+  border-color: rgba(30, 58, 138, 0.3);
+  box-shadow: var(--shadow-xl);
+}
+
+.model-image-wrapper,
+.product-image-wrapper {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.model-image,
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-image-wrapper svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-image-wrapper > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 20% 20%, rgba(30, 58, 138, 0.08), transparent 60%);
+}
+
+.model-card:hover .model-image,
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  padding: 4px 12px;
+  background-color: var(--tavue-red);
+  color: #fff;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+}
+
+/* Catalog & product pages */
+.catalog-page,
+.product-page,
+.personalization-page,
+.cart-page,
+.checkout-page,
+.account-page {
+  flex: 1;
+  background: linear-gradient(to bottom, #f8fafc, #ffffff);
+  padding: 32px;
+}
+
+.breadcrumb {
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.catalog-filters {
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 24px;
+  margin-bottom: 48px;
+  box-shadow: var(--shadow-sm);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.product-grid,
+.personalization-grid,
+.cart-grid,
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 500px;
+  gap: 64px;
+}
+
+.cart-grid,
+.checkout-grid {
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+}
+
+.viewer-card {
+  background-color: #fff;
+  border: 1px solid rgba(30, 58, 138, 0.1);
+  border-radius: 12px;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.product-price {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  color: var(--tavue-blue);
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.option-card {
+  padding: 24px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-card.selected,
+.payment-method.selected {
+  border-color: var(--tavue-blue);
+  background-color: rgba(30, 58, 138, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.color-swatch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.color-swatch {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  border: 2px solid rgba(15, 23, 42, 0.12);
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 8px -4px rgba(15, 23, 42, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.8);
+  transition: all 0.2s ease;
+}
+
+.color-swatch::before {
+  content: "";
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: var(--swatch-color, #1e3a8a);
+  border: 1px solid rgba(15, 23, 42, 0.2);
+}
+
+.color-swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px -6px rgba(15, 23, 42, 0.18);
+}
+
+.color-swatch.selected {
+  border-color: var(--tavue-blue);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+}
+
+.finish-btn {
+  min-width: 90px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(30, 58, 138, 0.15);
+  background-color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.8);
+  transition: all 0.2s ease;
+}
+
+.finish-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 12px -8px rgba(15, 23, 42, 0.2);
+}
+
+.finish-btn.ring-2 {
+  border-color: var(--tavue-blue);
+  background-color: rgba(30, 58, 138, 0.1);
+  color: var(--tavue-blue);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+}
+
+.progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+}
+
+.progress-step::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: #e5e7eb;
+  transform: translateX(50%);
+  z-index: -1;
+}
+
+.progress-step:last-child::after {
+  display: none;
+}
+
+.progress-step.active::after {
+  background-color: var(--tavue-blue);
+}
+
+.progress-number,
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.progress-step.active .progress-number {
+  background-color: var(--tavue-blue);
+}
+
+.step-number {
+  background-color: var(--tavue-blue);
+}
+
+.payment-method {
+  padding: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cart-item {
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 24px;
+  align-items: center;
+}
+
+.cart-summary {
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  position: sticky;
+  top: 100px;
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-total {
+  color: var(--tavue-blue);
+  font-family: "Playfair Display", serif;
+}
+
+.checkout-step {
+  padding: 32px;
+  background-color: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+}
+
+.account-header {
+  background-color: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.account-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+  margin-bottom: 32px;
+  gap: 4px;
+}
+
+.account-tab {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.account-tab.active {
+  color: var(--tavue-blue);
+  border-bottom-color: var(--tavue-blue);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.dashboard-card-value {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--tavue-blue);
+}
+
+.orders-table {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  border-spacing: 0;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.orders-table thead {
+  background-color: rgba(30, 58, 138, 0.05);
+}
+
+.orders-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge.delivered {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.in-transit {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.processing {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Form controls */
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: "Inter", sans-serif;
+  background-color: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--tavue-blue);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero-grid,
+  .product-grid,
+  .personalization-grid,
+  .cart-grid,
+  .checkout-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .steps-grid,
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .models-grid,
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .steps-grid,
+  .models-grid,
+  .products-grid,
+  .dashboard-grid,
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title,
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+  }
+}

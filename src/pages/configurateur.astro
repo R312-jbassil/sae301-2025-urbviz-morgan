@@ -1,0 +1,715 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+export const prerender = false;
+
+const frameMaterials = [
+  { value: "metal", label: "Métal poli" },
+  { value: "acetate", label: "Acétate premium" },
+  { value: "bois", label: "Bois naturel" },
+  { value: "titane", label: "Titane brossé" },
+  { value: "or18k", label: "Or 18K" },
+  { value: "orrose", label: "Or rose" },
+];
+
+const templeMaterials = [
+  { value: "metal", label: "Métal poli" },
+  { value: "acetate", label: "Acétate premium" },
+  { value: "bois", label: "Bois naturel" },
+  { value: "titane", label: "Titane brossé" },
+  { value: "or18k", label: "Or 18K" },
+  { value: "orrose", label: "Or rose" },
+];
+
+const lensOptions = [
+  { value: "transparent", label: "Transparent" },
+  { value: "gris", label: "Gris fumé" },
+  { value: "brun", label: "Brun ambré" },
+  { value: "bleu", label: "Bleu glacé" },
+  { value: "vert", label: "Vert forêt" },
+  { value: "rose", label: "Rose quartz" },
+];
+---
+<Layout
+  title="Configurateur TaVue"
+  description="Personnalisez votre monture TaVue, ajustez les matériaux, le pont, les verres et sauvegardez votre configuration."
+>
+  <section class="personalization-page">
+    <div class="mx-auto flex max-w-[var(--max-width)] flex-col gap-12">
+      <header class="space-y-4">
+        <nav class="breadcrumb">
+          <a href="/">Accueil</a>
+          <span aria-hidden="true">›</span>
+          <span>Configurateur</span>
+        </nav>
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div class="space-y-3">
+            <h1 class="text-4xl font-semibold text-[var(--tavue-navy)]">Composez votre monture</h1>
+            <p class="max-w-3xl text-[rgba(15,23,42,0.75)]">
+              Choisissez les matériaux, ajustez les proportions, appliquez vos finitions et visualisez le rendu instantanément avant de sauvegarder ou commander.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-[rgba(15,23,42,0.1)] px-5 py-4 text-sm text-[rgba(15,23,42,0.7)]">
+            <span class="block font-medium">Progression</span>
+            <span id="progress" class="text-2xl font-semibold text-[var(--tavue-blue)]">0%</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="personalization-grid">
+        <div class="space-y-6">
+          <div class="viewer-card relative overflow-hidden">
+            <div
+              id="svgHost"
+              class="flex h-full w-full items-center justify-center text-sm text-[rgba(15,23,42,0.6)]"
+            >
+              Chargement du rendu…
+            </div>
+          </div>
+          <div class="glass-panel flex items-center justify-between gap-6 p-6">
+            <div>
+              <span class="text-xs uppercase tracking-[0.3em] text-[rgba(15,23,42,0.5)]">Total estimé</span>
+              <p id="priceBig" class="text-4xl font-semibold text-[var(--tavue-blue)]">250</p>
+            </div>
+            <div class="text-right text-sm text-[rgba(15,23,42,0.6)]">
+              <p>
+                Détail atelier&nbsp;:
+                <span class="font-semibold text-[var(--tavue-navy)]"><span id="price">250</span> EUR</span>
+              </p>
+              <p>Estimation incluant matériaux, finition et traitement optique.</p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="card space-y-8 p-8">
+          <form id="configuratorForm" class="space-y-8">
+            <section class="space-y-4">
+              <h2 class="text-xl font-semibold text-[var(--tavue-navy)]">Matériaux</h2>
+              <div class="grid gap-4 md:grid-cols-2">
+                <label class="space-y-2">
+                  <span class="text-sm font-medium text-[rgba(15,23,42,0.8)]">Monture</span>
+                  <select id="materialFrame" class="form-select">
+                    {frameMaterials.map((option) => (
+                      <option value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+                <label class="space-y-2">
+                  <span class="text-sm font-medium text-[rgba(15,23,42,0.8)]">Branches</span>
+                  <select id="materialTemples" class="form-select">
+                    {templeMaterials.map((option) => (
+                      <option value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-xl font-semibold text-[var(--tavue-navy)]">Ajustements</h2>
+              <div class="grid gap-4 md:grid-cols-2">
+                <label class="space-y-2">
+                  <span class="flex items-center justify-between text-sm font-medium text-[rgba(15,23,42,0.8)]">
+                    Largeur du pont
+                    <span class="text-xs text-[rgba(15,23,42,0.6)]"><span id="bridgeValue">5</span> / 10</span>
+                  </span>
+                  <input
+                    id="bridge"
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value="5"
+                    class="range range-primary"
+                  />
+                </label>
+                <label class="space-y-2">
+                  <span class="flex items-center justify-between text-sm font-medium text-[rgba(15,23,42,0.8)]">
+                    Taille des verres
+                    <span class="text-xs text-[rgba(15,23,42,0.6)]"><span id="lensSizeValue">5</span> / 10</span>
+                  </span>
+                  <input
+                    id="lensSize"
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value="5"
+                    class="range range-primary"
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-xl font-semibold text-[var(--tavue-navy)]">Finition</h2>
+              <div class="flex flex-wrap gap-3">
+                <button type="button" class="finish-btn btn btn-outline" data-finish="brillant">Brillant</button>
+                <button type="button" class="finish-btn btn btn-outline" data-finish="mat">Mat</button>
+                <button type="button" class="finish-btn btn btn-outline" data-finish="satine">Satiné</button>
+              </div>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-xl font-semibold text-[var(--tavue-navy)]">Type de verre</h2>
+              <label class="space-y-2">
+                <span class="text-sm font-medium text-[rgba(15,23,42,0.8)]">Traitement optique</span>
+                <select id="lensColor" class="form-select">
+                  {lensOptions.map((option) => (
+                    <option value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </label>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-xl font-semibold text-[var(--tavue-navy)]">Gravure personnalisée</h2>
+              <label class="space-y-2">
+                <span class="text-sm font-medium text-[rgba(15,23,42,0.8)]">Texte (optionnel)</span>
+                <input
+                  id="engraveText"
+                  type="text"
+                  maxlength="15"
+                  placeholder="Initiales ou mot (15 caractères max)"
+                  class="form-input"
+                />
+              </label>
+              <div class="flex gap-4 text-sm text-[rgba(15,23,42,0.8)]">
+                <label class="flex items-center gap-2">
+                  <input type="radio" name="engraveSide" value="gauche" checked />
+                  Branche gauche
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="radio" name="engraveSide" value="droite" />
+                  Branche droite
+                </label>
+              </div>
+              <p class="text-xs text-[rgba(15,23,42,0.6)]">La gravure ajoute un supplément atelier de 45€.</p>
+            </section>
+
+            <div class="flex flex-col gap-3 md:flex-row">
+              <button id="btnSave" type="button" class="btn btn-primary flex-1">
+                Sauvegarder ma configuration
+              </button>
+              <button id="btnOrder" type="button" class="btn btn-outline flex-1">
+                Créer une commande
+              </button>
+            </div>
+          </form>
+
+          <div class="rounded-2xl border border-[rgba(15,23,42,0.1)] bg-[rgba(248,250,252,0.6)] p-4 text-xs text-[rgba(15,23,42,0.6)]">
+            Les sauvegardes alimentent PocketBase. Les commandes déclenchent une demande atelier TaVue avec la version actuelle du SVG.
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    const state = {
+      materialFrame: "metal",
+      materialFrameId: null,
+      materialFrameLabel: "Metal",
+      materialTemples: "metal",
+      materialTemplesId: null,
+      materialTemplesLabel: "Metal",
+      bridge: 5,
+      lensSize: 5,
+      lensColor: "transparent",
+      finish: "brillant",
+      engraveText: "",
+      engraveSide: "gauche",
+      price: 250,
+      editId: null,
+    };
+
+    const MATERIAL_COLORS = {
+      metal: "#C9C9C9",
+      acetate: "#F0D6CF",
+      bois: "#8B6B4A",
+      titane: "#B7C1C8",
+      or18k: "#D4AF37",
+      orrose: "#E4B7A0",
+    };
+
+    const LENS_STYLES = {
+      transparent: { fill: "#D9D9D9", opacity: 0.2 },
+      gris: { fill: "#212121", opacity: 0.35 },
+      brun: { fill: "#5A4332", opacity: 0.32 },
+      bleu: { fill: "#3866A6", opacity: 0.35 },
+      vert: { fill: "#4B775C", opacity: 0.35 },
+      rose: { fill: "#C08A90", opacity: 0.32 },
+    };
+
+    const PRICING = {
+      base: 250,
+      material: { acetate: 20, bois: 35, titane: 60, or18k: 280, orrose: 120, metal: 0 },
+      lensColor: { transparent: 0, gris: 15, brun: 15, bleu: 25, vert: 25, rose: 20 },
+      finish: { brillant: 0, mat: 10, satine: 15 },
+      engraving: 45,
+    };
+
+    const $ = (sel) => document.querySelector(sel);
+    const materialIdByCode = {};
+    const materialCodeById = {};
+    let svgRoot;
+    let gMonture;
+    let gBrancheG;
+    let gBrancheD;
+    let gPont;
+    let gVerreG;
+    let gVerreD;
+    let txtGravure;
+
+    const getBaseTransform = (node) => node?.dataset.baseTransform || "";
+
+    const slugify = (value) =>
+      value
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    async function loadMaterials() {
+      try {
+        const response = await fetch("/besoin/materiaux");
+        if (!response.ok) throw new Error("materiaux-fetch-failed");
+        const payload = await response.json();
+        const items = Array.isArray(payload?.items) ? payload.items : [];
+        items.forEach((item) => {
+          const code = slugify(item.libelle ?? item.id);
+          materialIdByCode[code] = item.id;
+          materialCodeById[item.id] = code;
+        });
+      } catch (error) {
+        console.warn("Materiaux fetch fallback", error);
+      }
+      applyMaterialIdsToOptions();
+      syncMaterialStateFromSelects();
+    }
+
+    function applyMaterialIdsToOptions() {
+      const frameSelect = $("#materialFrame");
+      const templeSelect = $("#materialTemples");
+      [frameSelect, templeSelect].forEach((select) => {
+        if (!select) return;
+        Array.from(select.options).forEach((option) => {
+          const code = option.value;
+          if (materialIdByCode[code]) {
+            option.dataset.materialId = materialIdByCode[code];
+          }
+        });
+      });
+    }
+
+    function syncMaterialStateFromSelects() {
+      const frameSelect = $("#materialFrame");
+      const frameOption = frameSelect?.selectedOptions?.[0];
+      if (frameOption) {
+        state.materialFrame = frameOption.value;
+        state.materialFrameId =
+          frameOption.dataset.materialId || materialIdByCode[frameOption.value] || null;
+        state.materialFrameLabel = frameOption.textContent?.trim() || state.materialFrame;
+      }
+      const templeSelect = $("#materialTemples");
+      const templeOption = templeSelect?.selectedOptions?.[0];
+      if (templeOption) {
+        state.materialTemples = templeOption.value;
+        state.materialTemplesId =
+          templeOption.dataset.materialId || materialIdByCode[templeOption.value] || null;
+        state.materialTemplesLabel = templeOption.textContent?.trim() || state.materialTemples;
+      }
+      const lensSelect = $("#lensColor");
+      const lensOption = lensSelect?.selectedOptions?.[0];
+      if (lensOption) {
+        state.lensColor = lensOption.value;
+      }
+    }
+
+    function updateFinishButtons() {
+      document.querySelectorAll(".finish-btn").forEach((btn) => {
+        if (btn.dataset.finish === state.finish) {
+          btn.classList.add("ring-2", "ring-amber-500", "bg-amber-500/20");
+        } else {
+          btn.classList.remove("ring-2", "ring-amber-500", "bg-amber-500/20");
+        }
+      });
+    }
+
+    function setSelectValue(select, slug, materialId) {
+      if (!select) return;
+      let applied = false;
+      if (slug && select.querySelector(`option[value="${slug}"]`)) {
+        select.value = slug;
+        applied = true;
+      }
+      if (!applied && materialId) {
+        const match = Array.from(select.options).find(
+          (option) => option.dataset.materialId === materialId
+        );
+        if (match) {
+          select.value = match.value;
+        }
+      }
+    }
+
+    function syncEditQueryParam() {
+      if (!state.editId || !window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set("edit", state.editId);
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    async function loadSVG() {
+      try {
+        const res = await fetch("/assets/lunettes.svg");
+        const raw = await res.text();
+        $("#svgHost").innerHTML = raw;
+        svgRoot = $("#svgHost svg");
+        gMonture = svgRoot?.querySelector("#monture");
+        const branchesGroup = svgRoot?.querySelector("#branches");
+        gBrancheG = branchesGroup || null;
+        gBrancheD = branchesGroup || null;
+
+        gPont = svgRoot?.querySelector("#pont");
+
+        const verresGroup = svgRoot?.querySelector("#verres");
+        if (verresGroup) {
+          const lensPaths = verresGroup.querySelectorAll("path");
+          gVerreG = lensPaths[0] ?? verresGroup;
+          gVerreD = lensPaths[1] ?? lensPaths[0] ?? verresGroup;
+        }
+
+        txtGravure = svgRoot?.querySelector("#gravure");
+
+        [gPont, gVerreG, gVerreD].forEach((node) => {
+          if (node) {
+            node.dataset.baseTransform = node.getAttribute("transform") || "";
+          }
+        });
+
+        positionGravure();
+        applyAll();
+      } catch (error) {
+        console.error("SVG load failed", error);
+        $("#svgHost").textContent = "Impossible de charger le rendu.";
+      }
+    }
+
+    function applyAll() {
+      const frame = MATERIAL_COLORS[state.materialFrame] || "#C9C9C9";
+      const temples = MATERIAL_COLORS[state.materialTemples] || "#C9C9C9";
+
+      colorize(gMonture, frame);
+      colorize(gPont, frame);
+      colorize(gBrancheG, temples);
+      colorize(gBrancheD, temples);
+
+      const lens = LENS_STYLES[state.lensColor];
+      if (lens) {
+        colorize(gVerreG, lens.fill, lens.opacity);
+        colorize(gVerreD, lens.fill, lens.opacity);
+      }
+
+      applyFinish(state.finish);
+      applyBridgeWidth(state.bridge);
+      applyLensSize(state.lensSize);
+
+      if (txtGravure) {
+        txtGravure.textContent = state.engraveText || "";
+        txtGravure.setAttribute("opacity", state.engraveText ? "1" : "0");
+        positionGravure();
+      }
+
+      updatePrice();
+      updateProgress();
+      updateFinishButtons();
+
+      $("#bridgeValue").textContent = state.bridge;
+      $("#lensSizeValue").textContent = state.lensSize;
+    }
+
+    function colorize(group, fill, opacity = 1) {
+      if (!group) return;
+      const targets = group.matches?.("path, rect, circle, polygon, ellipse")
+        ? [group]
+        : group.querySelectorAll?.("path, ellipse, polygon, rect");
+      (targets || []).forEach((el) => {
+        if (!el) return;
+        el.setAttribute("fill", fill);
+        if (el.style) {
+          el.style.fill = fill;
+        }
+        if (opacity !== 1) {
+          el.setAttribute("opacity", opacity);
+          if (el.style) el.style.opacity = opacity;
+        } else {
+          el.removeAttribute("opacity");
+          if (el.style) el.style.removeProperty("opacity");
+        }
+      });
+    }
+
+    function applyFinish(kind) {
+      const targets = [gMonture, gPont, gBrancheG, gBrancheD];
+      targets.forEach((group) => {
+        if (!group) return;
+        group.style.filter = "";
+        if (kind === "mat") group.style.filter = "saturate(0.7) brightness(0.95)";
+        if (kind === "satine") group.style.filter = "contrast(1.05) saturate(0.9)";
+        if (kind === "brillant") group.style.filter = "contrast(1.15) brightness(1.05)";
+      });
+    }
+
+    function applyBridgeWidth(mm) {
+      if (!gPont) return;
+      if (!gPont.dataset.centerX) {
+        const box = gPont.getBBox();
+        gPont.dataset.centerX = String(box.x + box.width / 2);
+      }
+      const centerX = Number(gPont.dataset.centerX || 298);
+      const base = getBaseTransform(gPont);
+      const scale = 0.85 + ((mm - 2) / 8) * 0.4;
+      gPont.setAttribute(
+        "transform",
+        `translate(${centerX} 0) scale(${scale},1) translate(${-centerX} 0) ${base}`.trim()
+      );
+    }
+
+    function applyLensSize(val) {
+      if (!gVerreG || !gVerreD) return;
+      const scale = 0.9 + ((val - 1) / 9) * 0.3;
+      const cxLeft = 190;
+      const cyLeft = 215;
+      const cxRight = 320;
+      const cyRight = 220;
+      gVerreG.setAttribute(
+        "transform",
+        `translate(${cxLeft} ${cyLeft}) scale(${scale}) translate(${-cxLeft} ${-cyLeft}) ${getBaseTransform(
+          gVerreG
+        )}`.trim()
+      );
+      gVerreD.setAttribute(
+        "transform",
+        `translate(${cxRight} ${cyRight}) scale(${scale}) translate(${-cxRight} ${-cyRight}) ${getBaseTransform(
+          gVerreD
+        )}`.trim()
+      );
+    }
+
+    function positionGravure() {
+      if (!txtGravure) return;
+      txtGravure.setAttribute("font-size", "10");
+      txtGravure.setAttribute("fill", "#111");
+      if (state.engraveSide === "gauche") {
+        txtGravure.setAttribute("x", "130");
+        txtGravure.setAttribute("y", "180");
+        txtGravure.setAttribute("transform", "");
+      } else {
+        txtGravure.setAttribute("x", "430");
+        txtGravure.setAttribute("y", "195");
+        txtGravure.setAttribute("transform", "");
+      }
+    }
+
+    function updatePrice() {
+      let price = PRICING.base;
+      price += PRICING.material[state.materialFrame] || 0;
+      price += PRICING.material[state.materialTemples] || 0;
+      price += PRICING.lensColor[state.lensColor] || 0;
+      price += PRICING.finish[state.finish] || 0;
+      if (state.engraveText) price += PRICING.engraving;
+      state.price = price;
+      $("#price").textContent = price;
+      $("#priceBig").textContent = price;
+    }
+
+    function updateProgress() {
+      let done = 0;
+      if (state.materialFrame) done++;
+      if (state.materialTemples) done++;
+      if (state.lensColor) done++;
+      if (state.finish) done++;
+      if (state.bridge !== 5) done++;
+      if (state.lensSize !== 5) done++;
+      if (state.engraveText) done++;
+      const pct = Math.min(100, Math.round((done / 7) * 100));
+      $("#progress").textContent = `${pct}%`;
+    }
+
+    function bindUI() {
+      $("#materialFrame").addEventListener("change", (e) => {
+        const option = e.target.selectedOptions?.[0];
+        state.materialFrame = option?.value ?? state.materialFrame;
+        state.materialFrameId =
+          option?.dataset.materialId || materialIdByCode[state.materialFrame] || null;
+        state.materialFrameLabel = option?.textContent?.trim() || state.materialFrame;
+        applyAll();
+      });
+      $("#materialTemples").addEventListener("change", (e) => {
+        const option = e.target.selectedOptions?.[0];
+        state.materialTemples = option?.value ?? state.materialTemples;
+        state.materialTemplesId =
+          option?.dataset.materialId || materialIdByCode[state.materialTemples] || null;
+        state.materialTemplesLabel = option?.textContent?.trim() || state.materialTemples;
+        applyAll();
+      });
+      $("#bridge").addEventListener("input", (e) => {
+        state.bridge = Number(e.target.value);
+        applyAll();
+      });
+      $("#lensSize").addEventListener("input", (e) => {
+        state.lensSize = Number(e.target.value);
+        applyAll();
+      });
+      $("#lensColor").addEventListener("change", (e) => {
+        state.lensColor = e.target.value;
+        applyAll();
+      });
+      document.querySelectorAll(".finish-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.finish = btn.dataset.finish;
+          updateFinishButtons();
+          applyAll();
+        });
+      });
+      $("#engraveText").addEventListener("input", (e) => {
+        state.engraveText = e.target.value.trim();
+        applyAll();
+      });
+      document.querySelectorAll("input[name='engraveSide']").forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          state.engraveSide = e.target.value;
+          applyAll();
+        });
+      });
+
+      $("#btnSave").addEventListener("click", saveComposition);
+      $("#btnOrder").addEventListener("click", createOrder);
+    }
+
+    function currentSVGString() {
+      return svgRoot?.outerHTML ?? "";
+    }
+
+    async function saveComposition() {
+      await persist("/besoin/save-composition");
+    }
+
+    async function createOrder() {
+      await persist("/besoin/create-order");
+    }
+
+    async function persist(url) {
+      try {
+        const payloadOptions = { ...state };
+        delete payloadOptions.editId;
+        const payload = {
+          options: payloadOptions,
+          svg: currentSVGString(),
+          editId: state.editId,
+        };
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "Une erreur est survenue");
+        }
+        if (data?.id) {
+          state.editId = data.id;
+        } else if (data?.lunetteId) {
+          state.editId = data.lunetteId;
+        }
+        if (state.editId) {
+          syncEditQueryParam();
+        }
+        alert(url.includes("order") ? "Commande créée." : "Configuration sauvegardée.");
+      } catch (error) {
+        console.error(error);
+        alert(error.message || "Impossible de traiter la requête.");
+      }
+    }
+
+    async function loadExistingConfiguration(id) {
+      try {
+        const response = await fetch(`/besoin/lunettes/${id}`);
+        if (!response.ok) {
+          throw new Error("lunette-fetch-failed");
+        }
+        const payload = await response.json();
+        if (!payload?.ok) {
+          throw new Error(payload?.error || "lunette-fetch-failed");
+        }
+        const { options } = payload;
+        state.editId = id;
+        state.materialFrameId = options.materialFrameId ?? null;
+        state.materialFrameLabel = options.materialFrameLabel ?? state.materialFrameLabel;
+        const frameSlug =
+          options.materialFrameSlug ??
+          (state.materialFrameId ? materialCodeById[state.materialFrameId] : null);
+        state.materialFrame = frameSlug ?? state.materialFrame;
+        state.materialTemplesId = options.materialTemplesId ?? null;
+        state.materialTemplesLabel = options.materialTemplesLabel ?? state.materialTemplesLabel;
+        const templesSlug =
+          options.materialTemplesSlug ??
+          (state.materialTemplesId ? materialCodeById[state.materialTemplesId] : null);
+        state.materialTemples = templesSlug ?? state.materialTemples;
+        state.bridge = Number(options.bridge ?? state.bridge);
+        state.lensSize = Number(options.lensSize ?? state.lensSize);
+        state.lensColor = options.lensColor ?? state.lensColor;
+        state.finish = options.finish ?? state.finish;
+        state.engraveText = options.engraveText ?? "";
+        state.engraveSide = options.engraveSide ?? "gauche";
+        state.price = Number(options.price ?? state.price);
+
+        setSelectValue($("#materialFrame"), frameSlug, options.materialFrameId);
+        setSelectValue($("#materialTemples"), templesSlug, options.materialTemplesId);
+
+        const bridgeInput = $("#bridge");
+        if (bridgeInput) bridgeInput.value = state.bridge;
+        const lensSizeInput = $("#lensSize");
+        if (lensSizeInput) lensSizeInput.value = state.lensSize;
+        const lensColorSelect = $("#lensColor");
+        if (lensColorSelect) lensColorSelect.value = state.lensColor;
+        const engraveInput = $("#engraveText");
+        if (engraveInput) engraveInput.value = state.engraveText;
+        const engraveRadio = document.querySelector(
+          `input[name='engraveSide'][value='${state.engraveSide}']`
+        );
+        if (engraveRadio) engraveRadio.checked = true;
+
+        syncMaterialStateFromSelects();
+        state.materialFrameLabel = options.materialFrameLabel ?? state.materialFrameLabel;
+        state.materialTemplesLabel = options.materialTemplesLabel ?? state.materialTemplesLabel;
+        updateFinishButtons();
+        updatePrice();
+        updateProgress();
+        applyAll();
+        syncEditQueryParam();
+      } catch (error) {
+        console.error("loadExistingConfiguration error", error);
+      }
+    }
+
+    async function init() {
+      await loadMaterials();
+      await loadSVG();
+      bindUI();
+      syncMaterialStateFromSelects();
+      applyAll();
+      const params = new URLSearchParams(window.location.search);
+      const editParam = params.get("edit");
+      if (editParam) {
+        state.editId = editParam;
+        await loadExistingConfiguration(editParam);
+      }
+    }
+
+    init();
+  </script>
+</Layout>
