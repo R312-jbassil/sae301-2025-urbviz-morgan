@@ -1,0 +1,113 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LunetteCard from "../components/LunetteCard.astro";
+import { pb } from "../lib/pocketbase";
+
+export const prerender = false;
+
+interface Materiau {
+  id: string;
+  libelle: string;
+}
+
+interface LunetteRecord {
+  id: string;
+  code_svg: string;
+  date_creation: string;
+  taille_verre: number;
+  largeur_pont: number;
+  IDutilisateur: string;
+  materiau_monture: string;
+  materiau_branche: string;
+  expand?: {
+    materiau_monture?: Materiau;
+    materiau_branche?: Materiau;
+  };
+}
+
+let lunettes: LunetteRecord[] = [];
+let loadError: string | null = null;
+
+try {
+  lunettes = await pb.collection("lunette").getFullList<LunetteRecord>({
+    expand: "materiau_monture,materiau_branche",
+    sort: "-created",
+  });
+} catch (error) {
+  loadError = "Impossible de récupérer vos créations. Vérifiez la connexion à PocketBase.";
+  console.warn(loadError, error);
+}
+---
+<Layout title="Catalogue de mes créations" description="Retrouvez toutes vos configurations TaVue et préparez votre prochaine commande.">
+  <section class="catalog-page">
+    <div class="mx-auto flex max-w-[var(--max-width)] flex-col gap-12">
+      <header class="space-y-4">
+        <nav class="breadcrumb">
+          <a href="/">Accueil</a>
+          <span aria-hidden="true">›</span>
+          <span>Mes créations</span>
+        </nav>
+        <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div class="space-y-2">
+            <h1 class="text-4xl">Mes montures personnalisées</h1>
+            <p class="max-w-2xl text-[rgba(15,23,42,0.7)]">
+              Filtrez vos modèles selon les matériaux ou dimensions pour les comparer avant de passer commande.
+            </p>
+          </div>
+          <a class="btn btn-primary" href="/configurateur">Créer un nouveau modèle</a>
+        </div>
+      </header>
+
+      <section class="catalog-filters">
+        <form class="filters-grid">
+          <label class="space-y-2">
+            <span class="text-sm font-medium text-[rgba(15,23,42,0.75)]">Matériau de monture</span>
+            <select class="form-select" disabled>
+              <option>Filtre à venir</option>
+            </select>
+          </label>
+          <label class="space-y-2">
+            <span class="text-sm font-medium text-[rgba(15,23,42,0.75)]">Matériau des branches</span>
+            <select class="form-select" disabled>
+              <option>Filtre à venir</option>
+            </select>
+          </label>
+          <label class="space-y-2">
+            <span class="text-sm font-medium text-[rgba(15,23,42,0.75)]">Taille du verre</span>
+            <select class="form-select" disabled>
+              <option>Filtre à venir</option>
+            </select>
+          </label>
+          <label class="space-y-2">
+            <span class="text-sm font-medium text-[rgba(15,23,42,0.75)]">Tri</span>
+            <select class="form-select" disabled>
+              <option>Plus récent</option>
+            </select>
+          </label>
+        </form>
+      </section>
+
+      {loadError ? (
+        <div class="card p-6 text-[rgba(15,23,42,0.7)]">{loadError}</div>
+      ) : lunettes.length === 0 ? (
+        <div class="card p-10 text-center text-[rgba(15,23,42,0.7)]">
+          <p>Aucune création enregistrée pour le moment.</p>
+          <p class="mt-3">
+            Lancez le configurateur pour générer votre première monture personnalisée.
+          </p>
+          <a class="btn btn-primary mt-6" href="/configurateur">Configurer ma première monture</a>
+        </div>
+      ) : (
+        <section class="products-grid">
+          {lunettes.map((lunette) => (
+            <LunetteCard lunette={lunette}>
+              <a slot="actions" class="btn btn-outline w-full" href={`/produit/${lunette.id}`}>
+                Voir la fiche
+              </a>
+            </LunetteCard>
+          ))}
+        </section>
+      )}
+    </div>
+  </section>
+</Layout>

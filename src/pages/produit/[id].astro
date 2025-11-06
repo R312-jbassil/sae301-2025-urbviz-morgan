@@ -1,0 +1,136 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SvgGlasses from "../../components/SvgGlasses.astro";
+import MaterialChip from "../../components/MaterialChip.astro";
+import { pb } from "../../lib/pocketbase";
+
+export const prerender = false;
+
+interface Materiau {
+  id: string;
+  libelle: string;
+}
+
+interface LunetteRecord {
+  id: string;
+  code_svg: string;
+  date_creation: string;
+  taille_verre: number;
+  largeur_pont: number;
+  IDutilisateur: string;
+  materiau_monture: string;
+  materiau_branche: string;
+  expand?: {
+    materiau_monture?: Materiau;
+    materiau_branche?: Materiau;
+  };
+}
+
+const { id } = Astro.params;
+
+let lunette: LunetteRecord | null = null;
+let loadError: string | null = null;
+let createdAt: Date | null = null;
+
+try {
+  lunette = await pb
+    .collection("lunette")
+    .getOne<LunetteRecord>(id, { expand: "materiau_monture,materiau_branche" });
+  createdAt = lunette.date_creation ? new Date(lunette.date_creation) : null;
+} catch (error) {
+  loadError = "Le modèle demandé est introuvable ou PocketBase est indisponible.";
+  console.warn(loadError, error);
+}
+---
+<Layout title={lunette ? `Modèle ${lunette.id.slice(0, 6)}` : "Modèle introuvable"}>
+  <section class="product-page">
+    <div class="mx-auto flex max-w-[var(--max-width)] flex-col gap-10">
+      {loadError || !lunette ? (
+        <div class="card p-10 text-center text-[rgba(15,23,42,0.7)]">
+          <h1 class="text-2xl font-semibold mb-3">Modèle indisponible</h1>
+          <p>{loadError ?? "La fiche du modèle ne peut pas être affichée."}</p>
+          <a href="/lunettes" class="btn btn-primary mt-6">Retourner à mes créations</a>
+        </div>
+      ) : (
+        <>
+          <nav class="breadcrumb">
+            <a href="/">Accueil</a>
+            <span aria-hidden="true">›</span>
+            <a href="/lunettes">Mes créations</a>
+            <span aria-hidden="true">›</span>
+            <span>Modèle #{lunette.id.slice(0, 6)}</span>
+          </nav>
+
+          <div class="product-grid">
+            <div class="viewer-card">
+              <SvgGlasses id={`detail-${lunette.id}`} svgCode={lunette.code_svg} />
+            </div>
+
+            <aside class="card p-8 space-y-6">
+              <header class="space-y-2">
+                <h1 class="text-3xl font-semibold">Modèle #{lunette.id.slice(0, 6)}</h1>
+                {createdAt && (
+                  <p class="text-sm text-[rgba(15,23,42,0.7)]">
+                    Créé le {createdAt.toLocaleDateString("fr-FR", { day: "2-digit", month: "long" })}.
+                  </p>
+                )}
+              </header>
+
+              <p class="text-[rgba(15,23,42,0.75)]">
+                Cette configuration est prête à être transmise à l'atelier TaVue. Vérifiez les mesures, validez
+                les matériaux puis lancez la production sur-mesure.
+              </p>
+
+              <div class="space-y-4">
+                <h2 class="text-lg font-semibold">Spécifications</h2>
+                <ul class="space-y-3 text-[rgba(15,23,42,0.75)]">
+                  <li>
+                    <strong>Verre :</strong> {lunette.taille_verre} mm
+                  </li>
+                  <li>
+                    <strong>Pont :</strong> {lunette.largeur_pont} mm
+                  </li>
+                  <li>
+                    <strong>Matériau monture :</strong>
+                    {lunette.expand?.materiau_monture ? (
+                      <MaterialChip material={lunette.expand.materiau_monture} />
+                    ) : (
+                      <span> non renseigné</span>
+                    )}
+                  </li>
+                  <li>
+                    <strong>Matériau branches :</strong>
+                    {lunette.expand?.materiau_branche ? (
+                      <MaterialChip material={lunette.expand.materiau_branche} />
+                    ) : (
+                      <span> non renseigné</span>
+                    )}
+                  </li>
+                </ul>
+              </div>
+
+              <div class="space-y-2">
+                <span class="text-sm uppercase tracking-[0.3em] text-[rgba(15,23,42,0.5)]">Estimation atelier</span>
+                <p class="product-price">420 €</p>
+                <p class="text-xs text-[rgba(15,23,42,0.5)]">
+                  Prix indicatif incluant monture sur-mesure et ajustements manuels.
+                </p>
+              </div>
+
+              <div class="space-y-3">
+                <a href="/configurateur" class="btn btn-primary w-full">Reconfigurer ce modèle</a>
+                <button class="btn btn-outline w-full" type="button">Demander un devis atelier</button>
+              </div>
+
+              <div class="rounded-2xl bg-[rgba(30,58,138,0.05)] p-4 text-xs text-[rgba(15,23,42,0.7)]">
+                <p>
+                  ID utilisateur enregistré : <span class="font-mono">{lunette.IDutilisateur ?? "—"}</span>
+                </p>
+              </div>
+            </aside>
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+</Layout>

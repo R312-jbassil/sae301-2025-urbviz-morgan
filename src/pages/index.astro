@@ -1,11 +1,215 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const collections = [
+  {
+    name: "Classique",
+    description: "L'elegance intemporelle a la francaise",
+    price: "A partir de 149€",
+    image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&h=600&fit=crop",
+    href: "/configurateur",
+    highlight: true,
+  },
+  {
+    name: "Moderne",
+    description: "Design contemporain et audacieux",
+    price: "A partir de 169€",
+    image: "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=450&fit=crop",
+    href: "/configurateur",
+    highlight: false,
+  },
+  {
+    name: "Sport",
+    description: "Performance et style reunis",
+    price: "A partir de 189€",
+    image: "https://images.unsplash.com/photo-1508296695146-257a814070b4?w=600&h=450&fit=crop",
+    href: "/configurateur",
+    highlight: false,
+  },
+];
+
+const processSteps = [
+  {
+    number: "01",
+    title: "Choisissez votre style",
+    description: "Parcourez nos collections et selectionnez le modele qui vous correspond",
+    iconPaths: ["M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z", "M12 12a3 3 0 100-6 3 3 0 000 6z"],
+  },
+  {
+    number: "02",
+    title: "Personnalisez",
+    description: "Couleurs, materiaux, finitions : creez vos lunettes uniques",
+    iconPaths: [
+      "M12 2L2 7l10 5 10-5-10-5z",
+      "M2 17l10 5 10-5",
+      "M2 12l10 5 10-5",
+    ],
+  },
+  {
+    number: "03",
+    title: "Validation",
+    description: "Verifiez votre creation et ajoutez vos corrections optiques",
+    iconPaths: [
+      "M9 11l3 3L22 4",
+      "M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",
+    ],
+  },
+  {
+    number: "04",
+    title: "Livraison",
+    description: "Recevez vos lunettes fabriquees en France sous 7 jours",
+    iconPaths: [
+      "M20 7h-4m0 0V3m0 4l3.5-3.5",
+      "M10 7H6m0 0V3m0 4L2.5 3.5",
+      "M20 17h-4m0 0v4m0-4l3.5 3.5",
+      "M10 17H6m0 0v4m0-4l-3.5 3.5",
+    ],
+  },
+];
 ---
+<Layout
+  title="TaVue — Atelier de lunettes sur-mesure"
+  description="Composez vos lunettes personnalisees avec le savoir-faire francais. Collections exclusives, fabrication rapide et livraisons en 7 jours."
+>
+  <div class="home-page">
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="hero-badge-flag" aria-hidden="true">🇫🇷</span>
+            <span class="hero-badge-text">Made in France</span>
+          </div>
+          <h1 class="hero-title">
+            L'Excellence<br />
+            <span class="hero-title-accent">a la Francaise</span>
+          </h1>
+          <p class="hero-subtitle">
+            Creez vos lunettes sur-mesure avec le savoir-faire francais. Design personnalise, qualite premium, livraison en 7 jours.
+          </p>
+          <div class="hero-cta-group">
+            <a class="btn-primary btn-large" href="/configurateur">Configurer mes lunettes</a>
+            <a class="btn-secondary btn-large" href="/lunettes">Decouvrir nos collections</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat-item">
+              <span class="hero-stat-value">10 000+</span>
+              <span class="hero-stat-label">Clients satisfaits</span>
+            </div>
+            <div class="hero-stat-divider" aria-hidden="true"></div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-value">7 jours</span>
+              <span class="hero-stat-label">Livraison garantie</span>
+            </div>
+            <div class="hero-stat-divider" aria-hidden="true"></div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-value">100%</span>
+              <span class="hero-stat-label">Made in France</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-image-container">
+            <img
+              src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=1200&h=1200&fit=crop"
+              alt="Lunettes TaVue"
+              class="hero-image"
+              loading="lazy"
+            />
+            <div class="hero-image-badge">
+              <span class="hero-image-badge-icon" aria-hidden="true">🇫🇷</span>
+              <span class="hero-image-badge-text">Fabrique a Paris</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<Layout>
-	<Welcome />
+    <section class="collections-section">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">
+            <span class="section-badge-dot"></span>
+            <span class="section-badge-text">Nos Collections</span>
+          </div>
+          <h2 class="section-title">
+            Des modeles penses<br />
+            pour votre style
+          </h2>
+          <p class="section-subtitle">
+            Chaque collection reflète l'excellence du design francais
+          </p>
+        </div>
+
+        <div class="collections-grid">
+          {collections.map((collection) => (
+            <article class={`collection-card${collection.highlight ? " collection-card-large" : ""}`}>
+              <div class="collection-image-wrapper">
+                <img
+                  src={collection.image}
+                  alt={collection.name}
+                  class="collection-image"
+                  loading="lazy"
+                />
+                <div class="collection-badge">
+                  <span aria-hidden="true">🇫🇷</span>
+                  <span>Made in France</span>
+                </div>
+              </div>
+              <div class="collection-content">
+                <h3 class="collection-title">{collection.name}</h3>
+                <p class="collection-description">{collection.description}</p>
+                <div class="collection-footer">
+                  <span class="collection-price">{collection.price}</span>
+                  <a class="collection-cta" href={collection.href}>
+                    Decouvrir
+                    <svg class="collection-cta-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="process-section">
+      <div class="section-container">
+        <div class="section-header section-header-center">
+          <div class="section-badge section-badge-center">
+            <span class="section-badge-dot"></span>
+            <span class="section-badge-text">Notre Processus</span>
+          </div>
+          <h2 class="section-title">
+            4 etapes pour vos lunettes<br />
+            parfaites
+          </h2>
+        </div>
+
+        <div class="process-grid">
+          {processSteps.map((step) => (
+            <article class="process-step">
+              <div class="process-step-number">{step.number}</div>
+              <div class="process-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  {step.iconPaths.map((path) => (
+                    <path d={path} />
+                  ))}
+                </svg>
+              </div>
+              <h3 class="process-step-title">{step.title}</h3>
+              <p class="process-step-description">{step.description}</p>
+            </article>
+          ))}
+        </div>
+
+        <div class="process-cta">
+          <a class="btn-primary btn-large" href="/configurateur">
+            Commencer ma creation
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
 </Layout>

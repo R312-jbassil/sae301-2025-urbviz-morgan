@@ -1,0 +1,112 @@
+---
+import glassesSVG from "../assets/glasses.svg?raw";
+
+interface Props {
+  id?: string;
+  frameColor?: string;
+  branchColor?: string;
+  glassSize?: number;
+  bridgeWidth?: number;
+  svgCode?: string;
+  glassColor?: string;
+}
+
+const {
+  id,
+  frameColor = "#1A1A1A",
+  branchColor = "#1A1A1A",
+  glassSize = 48,
+  bridgeWidth = 20,
+  glassColor = "rgba(209, 233, 255, 0.75)",
+  svgCode,
+} = Astro.props;
+
+const componentId = id ?? `glasses-${Math.random().toString(36).slice(2, 9)}`;
+---
+<div
+  id={componentId}
+  data-glasses
+  data-frame-color={frameColor}
+  data-branch-color={branchColor}
+  data-glass-size={glassSize}
+  data-bridge-width={bridgeWidth}
+  data-glass-color={glassColor}
+  class="w-full"
+>
+  <Fragment set:html={svgCode ?? glassesSVG} />
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById("${componentId}");
+    if (!root) return;
+
+    const groups = {
+      monture: () => root.querySelector("g#monture"),
+      branches: () => root.querySelector("g#branches"),
+      verres: () => root.querySelector("g#verres"),
+    };
+
+    const getConfig = (overrides = {}) => ({
+      frameColor: overrides.frameColor ?? root.dataset.frameColor ?? "#1A1A1A",
+      branchColor: overrides.branchColor ?? root.dataset.branchColor ?? "#1A1A1A",
+      glassSize: Number(overrides.glassSize ?? root.dataset.glassSize ?? 48),
+      bridgeWidth: Number(overrides.bridgeWidth ?? root.dataset.bridgeWidth ?? 20),
+      glassColor:
+        overrides.glassColor ?? root.dataset.glassColor ?? "rgba(209, 233, 255, 0.75)",
+    });
+
+    const paintGroup = (group, color) => {
+      if (!group) return;
+      group.querySelectorAll("path,rect,circle,ellipse,polygon,polyline").forEach((node) => {
+        node.setAttribute("fill", color);
+        node.setAttribute("stroke", color);
+        node.style.fill = color;
+        node.style.stroke = color;
+        node.style.strokeWidth = node.style.strokeWidth || node.getAttribute("stroke-width") || "1";
+      });
+    };
+
+    const tintVerres = (group, color) => {
+      if (!group) return;
+      group.querySelectorAll("path,rect,circle,ellipse,polygon,polyline").forEach((node) => {
+        node.setAttribute("fill", color);
+        node.setAttribute("stroke", color);
+        node.style.fill = color;
+        node.style.stroke = color;
+        node.style.opacity = "0.4";
+        node.style.fillOpacity = "0.35";
+        node.style.strokeOpacity = "0.55";
+      });
+    };
+
+    const apply = (overrides = {}) => {
+      const config = getConfig(overrides);
+      paintGroup(groups.monture(), config.frameColor);
+      paintGroup(groups.branches(), config.branchColor);
+
+      const verres = groups.verres();
+      if (verres) {
+        tintVerres(verres, config.glassColor);
+        const scale = config.glassSize / 48;
+        const bridgeOffset = (config.bridgeWidth - 20) * 0.5;
+        verres.setAttribute("transform", `translate(${bridgeOffset},0) scale(${scale})`);
+      }
+
+      root.dataset.frameColor = config.frameColor;
+      root.dataset.branchColor = config.branchColor;
+      root.dataset.glassSize = String(config.glassSize);
+      root.dataset.bridgeWidth = String(config.bridgeWidth);
+      root.dataset.glassColor = config.glassColor;
+    };
+
+    root.addEventListener("tavue:update", (event) => {
+      apply(event.detail ?? {});
+    });
+
+    const observer = new MutationObserver(() => apply());
+    observer.observe(root, { childList: true, subtree: true });
+
+    requestAnimationFrame(apply);
+  })();
+</script>
