@@ -6,9 +6,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "start": "node ./dist/server/entry.mjs"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.0",
     "astro": "^5.15.3",
     "daisyui": "^5.4.3",
     "pocketbase": "^0.26.3"

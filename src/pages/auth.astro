@@ -1,13 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { createServerPocketBase } from "../lib/pocketbase.server";
+import pb from "../lib/pocketbase.server";
 
-const pb = createServerPocketBase(Astro.request.headers.get("cookie") ?? "");
+pb.authStore.clear();
+pb.authStore.loadFromCookie(Astro.request.headers.get("cookie") ?? "");
 let currentUser: Record<string, unknown> | null = null;
 
 if (pb.authStore.isValid) {
   currentUser = structuredClone(pb.authStore.model ?? null);
 }
+
+pb.authStore.clear();
 ---
 <Layout title="Mon espace TaVue" description="Connectez-vous pour retrouver vos creations, commandes et suivis atelier.">
   <section class="account-page auth-page">
@@ -69,7 +72,7 @@ if (pb.authStore.isValid) {
                 name="password"
                 class="form-input"
                 type="password"
-                placeholder="••••••••"
+                placeholder="********"
                 autocomplete="current-password"
                 required
               />
@@ -164,3 +167,7 @@ if (pb.authStore.isValid) {
     });
   </script>
 </Layout>
+
+
+
+

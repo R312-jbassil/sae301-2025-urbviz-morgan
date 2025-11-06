@@ -1,8 +1,8 @@
-import PocketBase from 'pocketbase';
-import type { TypedPocketBase } from "./pocketbase-types";
-var path='';
-if(import.meta.env.MODE === 'development')
-    path = 'http://localhost:8090'    //localhost = machine de dev
-else path = 'https://saetavue.morganurbanovizeu.fr:443'   //url du site 
-const pb = new PocketBase(path) as TypedPocketBase;
-export default pb;
+import PocketBase from "pocketbase";
+
+const baseUrl =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:8090"
+    : "https://<ton-sousdomaine>.<ton-domaine>.<tld>"; // remplace par ta vraie URL (tu peux enlever :443)
+
+export const pb = new PocketBase(baseUrl);

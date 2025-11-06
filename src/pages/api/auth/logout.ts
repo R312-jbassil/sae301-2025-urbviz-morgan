@@ -1,10 +1,17 @@
 import type { APIRoute } from "astro";
-import { createServerPocketBase, cookieOptions } from "../../../lib/pocketbase.server";
+import pb from "../../../lib/pocketbase.server";
 
-export const POST: APIRoute = async ({ request }) => {
-  const pb = createServerPocketBase(request.headers.get("cookie") ?? "");
+const cookieOptions = {
+  httpOnly: true,
+  secure: import.meta.env.PROD,
+  sameSite: "Lax" as const,
+  path: "/",
+};
+
+export const POST: APIRoute = async () => {
   pb.authStore.clear();
   const clearedCookie = pb.authStore.exportToCookie(cookieOptions);
+  pb.authStore.clear();
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

@@ -1,5 +1,12 @@
 import type { APIRoute } from "astro";
-import { createServerPocketBase, cookieOptions } from "../../../lib/pocketbase.server";
+import pb from "../../../lib/pocketbase.server";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: import.meta.env.PROD,
+  sameSite: "Lax" as const,
+  path: "/",
+};
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -14,7 +21,8 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    const pb = createServerPocketBase(request.headers.get("cookie") ?? "");
+    pb.authStore.clear();
+
     const authData = await pb.collection("users").authWithPassword(email, password);
     const authCookie = pb.authStore.exportToCookie(cookieOptions);
 
@@ -23,6 +31,8 @@ export const POST: APIRoute = async ({ request }) => {
       email: authData.record.email,
       name: authData.record.name ?? authData.record.username ?? authData.record.email,
     };
+
+    pb.authStore.clear();
 
     return new Response(JSON.stringify({ ok: true, user }), {
       status: 200,
@@ -38,6 +48,7 @@ export const POST: APIRoute = async ({ request }) => {
       typeof error?.message === "string" && error.message
         ? error.message
         : "Identifiants invalides ou compte introuvable.";
+    pb.authStore.clear();
     return new Response(JSON.stringify({ ok: false, message }), {
       status,
       headers: { "Content-Type": "application/json" },
